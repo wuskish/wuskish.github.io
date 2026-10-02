@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    },
+                    colors: {
+                        skyAccent: '#38bdf8',
+                        blueGlow: 'rgba(56, 189, 248, 0.4)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --accent-color: #38bdf8;
+            --accent-hover: #0284c7;
+            --accent-glow: rgba(56, 189, 248, 0.35);
+        }
+
+        body {
+            background-color: #070c14;
+            color: #f1f5f9;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Blue-White Glassmorphism Card Style */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(186, 230, 253, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.05);
+        }
+
+        .glass-card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card-hover:hover {
+            transform: translateY(-3px);
+            border-color: rgba(186, 230, 253, 0.35);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 25px var(--accent-glow);
+        }
+
+        .glass-input {
+            background: rgba(11, 19, 36, 0.8);
+            border: 1px solid rgba(186, 230, 253, 0.2);
+            color: #ffffff;
+        }
+
+        .glass-input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #070c14;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(186, 230, 253, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38bdf8;
+        }
+
+        .eq-bar {
+            animation: eqHeight 1.2s ease-in-out infinite alternate;
+        }
+
+        .eq-bar:nth-child(1) { animation-delay: 0.1s; }
+        .eq-bar:nth-child(2) { animation-delay: 0.3s; }
+        .eq-bar:nth-child(3) { animation-delay: 0.5s; }
+        .eq-bar:nth-child(4) { animation-delay: 0.2s; }
+        .eq-bar:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes eqHeight {
+            0% { height: 15%; }
+            100% { height: 95%; }
+        }
+
+        .shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+        .shimmer::after {
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            transform: translateX(-100%);
+            background-image: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0,
+                rgba(255, 255, 255, 0.12) 20%,
+                rgba(255, 255, 255, 0.25) 60%,
+                rgba(255, 255, 255, 0)
+            );
+            animation: shimmer 3s infinite;
+            content: '';
+        }
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</head>
+<body class="min-h-screen relative">
+
+    <canvas id="bgCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
+
+    <!-- Background Ambient Blue Glow Orbs -->
+    <div class="fixed top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-sky-500/15 blur-[130px] pointer-events-none z-0"></div>
+    <div class="fixed bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-96 h-96 rounded-full bg-blue-600/15 blur-[130px] pointer-events-none z-0"></div>
+
+    <header class="relative z-20 w-full max-w-5xl mx-auto pt-6 px-4 flex justify-end items-center">
+        <!-- Language Switcher -->
+        <button onclick="toggleLanguage()" id="langBtn" title="Переключить язык / Switch Language" class="px-3.5 py-1.5 rounded-full bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/30 text-xs font-bold text-white transition-all flex items-center space-x-2 shadow-md">
+            <i class="fa-solid fa-globe text-sky-300"></i>
+            <span id="langLabel">RU</span>
+        </button>
+    </header>
+
+    <main class="relative z-10 w-full max-w-4xl mx-auto px-4 py-8 space-y-8">
+
+        <!-- Hero Card -->
+        <section class="glass-card rounded-3xl p-6 sm:p-10 relative overflow-hidden transition-all duration-300">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-400"></div>
+
+            <div class="flex flex-col md:flex-row items-center md:items-center gap-8">
+                
+                <!-- CLEAN ALIGNED AVATAR CONTAINER -->
+                <div class="flex-shrink-0">
+                    <div class="relative group">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-sky-400 to-blue-600 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-500 group-hover:scale-105"></div>
+                        <div class="relative w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-2 border-white/30 bg-slate-900 shadow-2xl">
+                            <img id="displayPfp" src="https://avatars.githubusercontent.com/u/243202393?v=4" alt="Avatar" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Info Header -->
+                <div class="flex-1 text-center md:text-left space-y-3 min-w-0 w-full">
+                    <div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-center md:justify-start gap-2 sm:gap-4 min-w-0">
+                            <h1 id="displayName" class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight break-words">
+                                Wusk
+                            </h1>
+                        </div>
+                        
+                        <div class="flex items-center justify-center md:justify-start mt-1 space-x-2 min-w-0">
+                            <span id="displayUsername" class="text-lg font-mono text-sky-200/80 truncate">@wuskish</span>
+                            <button onclick="copyUsername()" title="Копировать никнейм" class="text-sky-300/70 hover:text-white p-1 rounded-md hover:bg-white/10 transition-colors flex-shrink-0">
+                                <i class="fa-regular fa-copy text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- User Badges / Tags -->
+                    <div id="displayBadges" class="flex flex-wrap justify-center md:justify-start gap-2 pt-1">
+                        <span id="badge1" class="px-3 py-1 rounded-full text-xs font-medium bg-sky-500/15 border border-sky-400/30 text-sky-200 shimmer">
+                            🎬 Киноман & Сериаломан
+                        </span>
+                        <span id="badge2" class="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/15 border border-blue-400/30 text-blue-200 shimmer">
+                            🎵 Меломан
+                        </span>
+                        <span id="badge3" class="px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/15 border border-indigo-400/30 text-indigo-200 shimmer">
+                            👻 Analog Horror Fan
+                        </span>
+                    </div>
+
+                    <!-- About Me Bio Text -->
+                    <p id="displayBio" class="text-slate-200 text-sm sm:text-base leading-relaxed pt-2 max-w-2xl break-words">
+                        Всеееем привет... Люблю посмотреть фильмы/сериалы и поиграть в игры. Слушаю музыку 24/7.
+                    </p>
+
+                    <!-- Quick Location / Stat Bar -->
+                    <div class="pt-3 flex flex-wrap justify-center md:justify-start items-center gap-4 text-xs text-sky-200/70 border-t border-sky-200/10">
+                        <span id="statWatched" class="flex items-center"><i class="fa-solid fa-film mr-1.5 text-sky-400"></i> 47+ Посмотрено</span>
+                        <span id="statMusic" class="flex items-center"><i class="fa-solid fa-music mr-1.5 text-blue-400"></i> 17 Любимых Исполнителей</span>
+                        <span id="statWatching" class="flex items-center"><i class="fa-solid fa-tv mr-1.5 text-emerald-400"></i> Смотрю: Бэрри</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Currently Watching Section -->
+        <section class="glass-card rounded-3xl p-5 sm:p-6 border-l-4 border-l-sky-400 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-4 min-w-0">
+                <div class="w-12 h-12 rounded-2xl bg-sky-500/20 border border-sky-400/30 text-sky-300 flex items-center justify-center text-xl flex-shrink-0 animate-pulse shadow-md">
+                    <i class="fa-solid fa-play"></i>
+                </div>
+                <div class="min-w-0">
+                    <span id="lblNowWatching" class="text-xs uppercase font-bold text-sky-300 tracking-wider block">👀 Сейчас смотрю</span>
+                    <h3 id="txtBarryTitle" class="text-xl font-extrabold text-white truncate">Бэрри</h3>
+                    <p id="txtBarryGenre" class="text-xs text-sky-200/70 mt-0.5 truncate">Черная комедия / Драма / Триллер</p>
+                </div>
+            </div>
+            <span id="lblBarryStatus" class="px-4 py-1.5 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-200 text-xs font-semibold shadow-lg flex-shrink-0">
+                В процессе просмотра
+            </span>
+        </section>
+
+        <!-- Media Watched Section (47 Items) -->
+        <section class="glass-card rounded-3xl p-6 space-y-5">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 id="lblWatchedHeader" class="text-lg font-bold text-white flex items-center">
+                        <i class="fa-solid fa-film mr-2 text-sky-400"></i> Посмотрел (Фильмы / Сериалы / Аниме)
+                    </h2>
+                    <p class="text-xs text-sky-200/70 mt-0.5"><span id="lblTotalCollection">Всего в коллекции:</span> <span id="mediaCount" class="text-sky-300 font-bold">47</span></p>
+                </div>
+
+                <div class="flex flex-wrap bg-white/5 p-1 rounded-xl border border-sky-200/15 text-xs">
+                    <button onclick="filterMedia('all')" id="tab-all" class="px-3 py-1.5 rounded-lg text-white font-medium bg-sky-500/20 border border-sky-400/30 transition-colors">Все (47)</button>
+                    <button onclick="filterMedia('cinema')" id="tab-cinema" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white font-medium transition-colors">Кино & Сериалы</button>
+                    <button onclick="filterMedia('anime')" id="tab-anime" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white font-medium transition-colors">Аниме & Мульт</button>
+                    <button onclick="filterMedia('horror')" id="tab-horror" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white font-medium transition-colors">Web & Horror</button>
+                </div>
+            </div>
+
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-300/60 text-sm"></i>
+                <input type="text" id="mediaSearch" oninput="searchMedia()" placeholder="Поиск по названию (например, Ублюдок, Гарри Поттер, ДжоДжо)..." class="w-full glass-input rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-sky-200/40">
+            </div>
+
+            <div class="max-h-[480px] overflow-y-auto pr-2">
+                <div id="mediaGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"></div>
+                <div id="noResults" class="hidden text-center py-8 text-sky-200/60 text-sm">
+                    Ничего не найдено по вашему запросу 🔍
+                </div>
+            </div>
+        </section>
+
+        <!-- Music Section (17 Artists) -->
+        <section class="glass-card rounded-3xl p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <h2 id="lblMusicHeader" class="text-lg font-bold text-white flex items-center">
+                    <i class="fa-solid fa-headphones mr-2 text-sky-400"></i> Музыка, которую я люблю
+                </h2>
+                <span id="lblMusicBadge" class="text-xs text-sky-300 font-mono bg-sky-500/10 px-2.5 py-1 rounded-full border border-sky-400/20">
+                    17 Исполнителей
+                </span>
+            </div>
+
+            <div id="musicContainer" class="flex flex-wrap gap-2.5 pt-1">
+                <!-- Rendered dynamically via JS -->
+            </div>
+        </section>
+
+        <!-- Games Section (48 Games) -->
+        <section class="glass-card rounded-3xl p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <h2 id="lblGamesHeader" class="text-lg font-bold text-white flex items-center">
+                    <i class="fa-solid fa-gamepad mr-2 text-emerald-400"></i> Игры, в которые я играл
+                </h2>
+                <span id="lblGamesBadge" class="text-xs text-emerald-300 font-mono bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-400/20">
+                    48 Игр
+                </span>
+            </div>
+
+            <div id="gamesContainer" class="flex flex-wrap gap-2.5 pt-1">
+                <!-- Rendered dynamically via JS -->
+            </div>
+        </section>
+
+        <!-- Audio Player Section (Track: Forever - Alex G) -->
+        <section class="glass-card rounded-3xl p-6 relative overflow-hidden">
+            <audio id="realAudio" src="https://file.garden/ar-UZFwv0Jz67dhz/Alex%20G%20-%20Forever.mp3" preload="metadata"></audio>
+
+            <div class="mb-4">
+                <h2 id="lblAudioHeader" class="text-base font-bold text-white flex items-center">
+                    <i class="fa-solid fa-compact-disc mr-2 text-sky-400 animate-spin" style="animation-duration: 8s;"></i>
+                    Любимый Трек
+                </h2>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center gap-6">
+                <div class="relative w-28 h-28 sm:w-32 sm:h-32 flex-shrink-0 rounded-2xl overflow-hidden group shadow-lg border border-white/15">
+                    <img id="trackCover" src="https://i1.sndcdn.com/artworks-odlI7sYNd94l-0-t500x500.jpg" alt="Album Cover" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button onclick="toggleAudio()" class="w-12 h-12 rounded-full bg-white text-slate-900 flex items-center justify-center text-lg shadow-xl hover:scale-110 transition-transform">
+                            <i id="overlayPlayIcon" class="fa-solid fa-play ml-0.5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex-1 w-full space-y-3 min-w-0">
+                    <div class="min-w-0">
+                        <h3 id="trackTitle" class="text-lg font-bold text-white truncate">Forever</h3>
+                        <p id="trackArtist" class="text-sm text-sky-200/70 truncate">Alex G</p>
+                    </div>
+
+                    <div class="h-8 bg-black/40 rounded-xl p-2 flex items-end justify-between gap-1 overflow-hidden border border-sky-300/10">
+                        <div class="eq-bar w-full bg-sky-400 rounded-t"></div>
+                        <div class="eq-bar w-full bg-blue-400 rounded-t"></div>
+                        <div class="eq-bar w-full bg-indigo-400 rounded-t"></div>
+                        <div class="eq-bar w-full bg-cyan-300 rounded-t"></div>
+                        <div class="eq-bar w-full bg-sky-300 rounded-t"></div>
+                        <div class="eq-bar w-full bg-blue-500 rounded-t"></div>
+                        <div class="eq-bar w-full bg-sky-400 rounded-t"></div>
+                        <div class="eq-bar w-full bg-indigo-300 rounded-t"></div>
+                        <div class="eq-bar w-full bg-cyan-400 rounded-t"></div>
+                        <div class="eq-bar w-full bg-sky-400 rounded-t"></div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <div class="w-full bg-white/10 rounded-full h-1.5 cursor-pointer relative" onclick="seekAudio(event)">
+                            <div id="audioProgress" class="bg-gradient-to-r from-sky-400 to-blue-500 h-1.5 rounded-full w-0 relative transition-all duration-200">
+                                <span class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow"></span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between text-[11px] font-mono text-sky-200/60">
+                            <span id="currentTime">0:00</span>
+                            <span id="durationTime">0:00</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-start pt-1">
+                        <div class="flex items-center space-x-3">
+                            <button onclick="prevTrack()" class="text-sky-200/70 hover:text-white transition-colors"><i class="fa-solid fa-backward-step"></i></button>
+                            <button onclick="toggleAudio()" class="w-9 h-9 rounded-full bg-white text-slate-900 flex items-center justify-center hover:scale-105 transition-transform shadow-md">
+                                <i id="mainPlayIcon" class="fa-solid fa-play text-sm ml-0.5"></i>
+                            </button>
+                            <button onclick="nextTrack()" class="text-sky-200/70 hover:text-white transition-colors"><i class="fa-solid fa-forward-step"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social Links & Quote Section Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <section class="glass-card rounded-3xl p-6 space-y-4">
+                <h2 id="lblSocialHeader" class="text-base font-bold text-white flex items-center">
+                    <i class="fa-solid fa-share-nodes mr-2 text-sky-400"></i> Социальные Сети
+                </h2>
+                <div class="grid grid-cols-3 gap-2.5">
+                    <!-- Discord -->
+                    <a href="https://discord.com/invite/nmFRj9KXts" target="_blank" class="p-3.5 rounded-2xl bg-white/5 hover:bg-indigo-500/20 border border-sky-300/10 flex flex-col items-center justify-center text-center group transition-all">
+                        <i class="fa-brands fa-discord text-xl text-indigo-300 group-hover:scale-110 transition-transform mb-1"></i>
+                        <span class="text-xs font-medium text-white truncate w-full">Discord</span>
+                    </a>
+                    <!-- YouTube -->
+                    <a href="https://www.youtube.com/@wuskish" target="_blank" class="p-3.5 rounded-2xl bg-white/5 hover:bg-red-500/20 border border-sky-300/10 flex flex-col items-center justify-center text-center group transition-all">
+                        <i class="fa-brands fa-youtube text-xl text-red-500 group-hover:scale-110 transition-transform mb-1"></i>
+                        <span class="text-xs font-medium text-white truncate w-full">YouTube</span>
+                    </a>
+                    <!-- GitHub -->
+                    <a href="https://github.com/wuskish" target="_blank" class="p-3.5 rounded-2xl bg-white/5 hover:bg-slate-500/20 border border-sky-300/10 flex flex-col items-center justify-center text-center group transition-all">
+                        <i class="fa-brands fa-github text-xl text-slate-200 group-hover:scale-110 transition-transform mb-1"></i>
+                        <span class="text-xs font-medium text-white truncate w-full">GitHub</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- FAVORITE QUOTE CARD -->
+            <section class="glass-card rounded-3xl p-6 flex flex-col items-center justify-center text-center space-y-4 min-w-0 w-full">
+                <div class="min-w-0 w-full flex flex-col items-center text-center">
+                    <h2 id="lblQuoteHeader" class="text-base font-bold text-white flex items-center justify-center text-center mb-3.5 w-full">
+                        <i class="fa-solid fa-quote-left mr-2 text-sky-400 flex-shrink-0"></i>
+                        <span>Моя любимая цитата</span>
+                    </h2>
+
+                    <div class="relative bg-slate-950/50 p-5 rounded-2xl border border-sky-300/10 min-h-[100px] flex flex-col items-center justify-center text-center overflow-hidden w-full max-w-full">
+                        <p id="quoteText" class="text-sm sm:text-base italic text-slate-200 leading-relaxed break-words w-full text-center">
+                            "Страдания — когда ты делаешь что-то плохое и когда что-то плохое происходит с тобой."
+                        </p>
+                        <p id="quoteAuthor" class="text-xs font-semibold text-sky-400 mt-2.5 text-center break-words w-full">
+                            — Аляска Янг
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="text-center py-6 text-xs text-slate-400 space-y-1">
+            <p>© <span id="yearSpan">2026</span> <span id="lblFooterText">Wusk</span></p>
+            <p class="font-mono text-[10px] text-slate-500"><3</p>
+        </footer>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 glass-card px-4 py-3 rounded-2xl border border-sky-300/30 shadow-2xl flex items-center space-x-3 translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center">
+            <i class="fa-solid fa-check text-sm"></i>
+        </div>
+        <span id="toastMsg" class="text-xs sm:text-sm text-white font-medium">Скопировано в буфер обмена!</span>
+    </div>
+
+    <script>
+        document.getElementById('yearSpan').textContent = new Date().getFullYear();
+
+        let currentLang = localStorage.getItem('profile_lang') || 'ru';
+
+        /* i18n Translation Dictionary */
+        const i18n = {
+            ru: {
+                badge1: "🎬 Киноман & Сериаломан",
+                badge2: "🎵 Меломан",
+                badge3: "👻 Любитель Аналоговых Хорроров",
+                bio: "Всеееем привет... Люблю посмотреть фильмы/сериалы и поиграть в игры. Слушаю музыку 24/7.",
+                statWatched: "47+ Посмотрено",
+                statMusic: "17 Любимых Исполнителей",
+                statWatching: "Смотрю: Бэрри",
+                lblNowWatching: "👀 Сейчас смотрю",
+                barryTitle: "Бэрри",
+                barryGenre: "Черная комедия / Драма / Триллер",
+                lblBarryStatus: "В процессе просмотра",
+                lblWatchedHeader: "Посмотрел (Фильмы / Сериалы / Аниме)",
+                lblTotalCollection: "Всего в коллекции:",
+                tabAll: "Все (47)",
+                tabCinema: "Кино & Сериалы",
+                tabAnime: "Аниме & Мульт",
+                tabHorror: "Web & Horror",
+                searchPlaceholder: "Поиск по названию (например, Ублюдок, Гарри Поттер, ДжоДжо)...",
+                noResults: "Ничего не найдено по вашему запросу 🔍",
+                lblMusicHeader: "Музыка, которую я люблю",
+                lblMusicBadge: "17 Исполнителей",
+                lblGamesHeader: "Игры, в которые я играл",
+                lblGamesBadge: "48 Игр",
+                lblAudioHeader: "Любимый Трек",
+                lblSocialHeader: "Социальные Сети",
+                lblQuoteHeader: "Моя любимая цитата",
+                quoteText: '"Страдания — когда ты делаешь что-то плохое и когда что-то плохое происходит с тобой."',
+                quoteAuthor: "— Аляска Янг",
+                lblFooterText: "Wusk",
+                copiedToast: "Скопировано в буфер обмена!",
+                langToast: "Язык переключен на Русский 🇷🇺"
+            },
+            en: {
+                badge1: "🎬 Cinephile & TV Series Fan",
+                badge2: "🎵 Music Lover",
+                badge3: "👻 Analog Horror Fan",
+                bio: "Hey guys! Huge fan of movies, shows, and gaming. Literally listening to music 24/7.",
+                statWatched: "47+ Watched",
+                statMusic: "17 Favorite Artists",
+                statWatching: "Watching: Barry",
+                lblNowWatching: "👀 Currently Watching",
+                barryTitle: "Barry",
+                barryGenre: "Dark Comedy / Drama / Thriller",
+                lblBarryStatus: "In Progress",
+                lblWatchedHeader: "Watched (Movies / TV Shows / Anime)",
+                lblTotalCollection: "Total items:",
+                tabAll: "All (47)",
+                tabCinema: "Movies & TV",
+                tabAnime: "Anime & Toons",
+                tabHorror: "Web & Horror",
+                searchPlaceholder: "Search by title (e.g. Creep, Harry Potter, JoJo)...",
+                noResults: "Nothing found for your search 🔍",
+                lblMusicHeader: "Music I Love",
+                lblMusicBadge: "17 Artists",
+                lblGamesHeader: "Games I've Played",
+                lblGamesBadge: "48 Games",
+                lblAudioHeader: "Favorite Track",
+                lblSocialHeader: "Social Networks",
+                lblQuoteHeader: "My Favorite Quote",
+                quoteText: '"Suffering. Doing wrong and having wrong things happen to you."',
+                quoteAuthor: "— Alaska Young",
+                lblFooterText: "Wusk",
+                copiedToast: "Copied to clipboard!",
+                langToast: "Language switched to English 🇬🇧"
+            }
+        };
+
+        /* Background Particle Canvas */
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.speedY = (Math.random() - 0.5) * 0.4;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(186, 230, 253, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 40; i++) particles.push(new Particle());
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        /* Full Bilingual List of 47 Watched Media Items */
+        const mediaList = [
+            { ru: "Ублюдок (2014)", en: "Creep (2014)", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-ghost" },
+            { ru: "В поисках Аляски", en: "Looking for Alaska", cat: "cinema", tag_ru: "Сериал", tag_en: "TV Series", icon: "fa-film" },
+            { ru: "Пиджак (2004)", en: "The Jacket (2004)", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "Бойцовский Клуб", en: "Fight Club", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "Машинист (2004)", en: "The Machinist (2004)", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "Донни Дарко", en: "Donnie Darko", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "Мост в Терабитию", en: "Bridge to Terabithia", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "Хорошо быть тихоней", en: "The Perks of Being a Wallflower", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "Пацаны", en: "The Boys", cat: "cinema", tag_ru: "Сериал", tag_en: "TV Series", icon: "fa-tv" },
+            { ru: "Ты", en: "You", cat: "cinema", tag_ru: "Сериал", tag_en: "TV Series", icon: "fa-tv" },
+            { ru: "Декстер", en: "Dexter", cat: "cinema", tag_ru: "Сериал", tag_en: "TV Series", icon: "fa-tv" },
+            { ru: "Во все тяжкие", en: "Breaking Bad", cat: "cinema", tag_ru: "Сериал", tag_en: "TV Series", icon: "fa-tv" },
+            { ru: "Лучше звоните Солу", en: "Better Call Saul", cat: "cinema", tag_ru: "Сериал", tag_en: "TV Series", icon: "fa-tv" },
+            { ru: "Эффект Бабочки (2004)", en: "The Butterfly Effect (2004)", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "Гарри Поттер", en: "Harry Potter", cat: "cinema", tag_ru: "Франшиза", tag_en: "Franchise", icon: "fa-wand-magic-sparkles" },
+            { ru: "Мистер Робот", en: "Mr. Robot", cat: "cinema", tag_ru: "Сериал", tag_en: "TV Series", icon: "fa-laptop-code" },
+            { ru: "Кто я такой", en: "Who Am I", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-user-secret" },
+            { ru: "Ганнибал", en: "Hannibal", cat: "cinema", tag_ru: "Сериал", tag_en: "TV Series", icon: "fa-tv" },
+            { ru: "Охота (2012)", en: "The Hunt (2012)", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "Дневник Баскетболиста", en: "The Basketball Diaries", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "Страх (1996)", en: "Fear (1996)", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "Каталог Манделы", en: "The Mandela Catalogue", cat: "horror", tag_ru: "Analog Horror", tag_en: "Analog Horror", icon: "fa-ghost" },
+            { ru: "Баскетбол Куроко", en: "Kuroko's Basketball", cat: "anime", tag_ru: "Аниме", tag_en: "Anime", icon: "fa-basketball" },
+            { ru: "Файлы Уолтена", en: "The Walten Files", cat: "horror", tag_ru: "Analog Horror", tag_en: "Analog Horror", icon: "fa-tape" },
+            { ru: "Проект «Гемини»", en: "Gemini Man", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "UrbanSPOOK", en: "UrbanSPOOK", cat: "horror", tag_ru: "Analog Horror", tag_en: "Analog Horror", icon: "fa-skull" },
+            { ru: "Vita Carnis", en: "Vita Carnis", cat: "horror", tag_ru: "Analog Horror", tag_en: "Analog Horror", icon: "fa-bug" },
+            { ru: "Doctor Nowhere", en: "Doctor Nowhere", cat: "horror", tag_ru: "Analog Horror", tag_en: "Analog Horror", icon: "fa-eye" },
+            { ru: "Заводной Апельсин", en: "A Clockwork Orange", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "Цельнометаллическая оболочка", en: "Full Metal Jacket", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "Наруто", en: "Naruto", cat: "anime", tag_ru: "Аниме", tag_en: "Anime", icon: "fa-dragon" },
+            { ru: "Данганронпа", en: "Danganronpa", cat: "anime", tag_ru: "Аниме", tag_en: "Anime", icon: "fa-gamepad" },
+            { ru: "Тетрадь Смерти", en: "Death Note", cat: "anime", tag_ru: "Аниме", tag_en: "Anime", icon: "fa-book-skull" },
+            { ru: "Ван Пис", en: "One Piece", cat: "anime", tag_ru: "Аниме", tag_en: "Anime", icon: "fa-anchor" },
+            { ru: "Токийский Гуль", en: "Tokyo Ghoul", cat: "anime", tag_ru: "Аниме", tag_en: "Anime", icon: "fa-mask" },
+            { ru: "Монстр", en: "Monster", cat: "anime", tag_ru: "Аниме", tag_en: "Anime", icon: "fa-brain" },
+            { ru: "Фантастические Твари", en: "Fantastic Beasts", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-hat-wizard" },
+            { ru: "Улыбающиеся друзья", en: "Smiling Friends", cat: "anime", tag_ru: "Мультсериал", tag_en: "Animated Series", icon: "fa-face-smile" },
+            { ru: "Конь Боджек", en: "BoJack Horseman", cat: "anime", tag_ru: "Мультсериал", tag_en: "Animated Series", icon: "fa-horse" },
+            { ru: "Рик и Морти", en: "Rick and Morty", cat: "anime", tag_ru: "Мультсериал", tag_en: "Animated Series", icon: "fa-flask" },
+            { ru: "Код Гиасс", en: "Code Geass", cat: "anime", tag_ru: "Аниме", tag_en: "Anime", icon: "fa-crown" },
+            { ru: "Эксперименты Лэйн", en: "Serial Experiments Lain", cat: "anime", tag_ru: "Аниме", tag_en: "Anime", icon: "fa-network-wired" },
+            { ru: "ДжоДжо", en: "JoJo's Bizarre Adventure", cat: "anime", tag_ru: "Аниме", tag_en: "Anime", icon: "fa-hand-fist" },
+            { ru: "Евангелион", en: "Neon Genesis Evangelion", cat: "anime", tag_ru: "Аниме", tag_en: "Anime", icon: "fa-robot" },
+            { ru: "Эрго Прокси", en: "Ergo Proxy", cat: "anime", tag_ru: "Аниме", tag_en: "Anime", icon: "fa-moon" },
+            { ru: "Уэйн", en: "Wayne", cat: "cinema", tag_ru: "Сериал", tag_en: "TV Series", icon: "fa-motorcycle" },
+            { ru: "Пункт Назначения", en: "Final Destination", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-skull-crossbones" }
+        ];
+
+        /* Full Bilingual List of 17 Music Artists */
+        const musicList = [
+            { ru: "Alex G", en: "Alex G" },
+            { ru: "Sematary", en: "Sematary" },
+            { ru: "Nirvana", en: "Nirvana" },
+            { ru: "Weezer", en: "Weezer" },
+            { ru: "Wifiskeleton", en: "Wifiskeleton" },
+            { ru: "Валентин Стрыкало", en: "Valentin Strykalo" },
+            { ru: "Videoclub", en: "Videoclub" },
+            { ru: "Rory in early 20s", en: "Rory in early 20s" },
+            { ru: "Нервы", en: "Nervy" },
+            { ru: "Три Дня Дождя", en: "Three Days of Rain" },
+            { ru: "Конец Солнечных Дней", en: "Konets Solnechnykh Dney" },
+            { ru: "Автоспорт", en: "Autosport" },
+            { ru: "Автостопом По Фазе Сна", en: "Avtostopom po faze sna" },
+            { ru: "Onda Andar", en: "Onda Andar" },
+            { ru: "Fortuna 812", en: "Fortuna 812" },
+            { ru: "Lil Peep", en: "Lil Peep" },
+            { ru: "Lemon Demon", en: "Lemon Demon" }
+        ];
+
+        /* List of 48 Games */
+        const gamesList = [
+            "Dota 2", "Stalzone", "Minecraft", "Far Cry 3", "Far Cry 4", "Far Cry 5",
+            "Changed", "Changed Special", "Team Fortress 2", "SCP: Secret Laboratory",
+            "SCP: Containment Breach", "Raft", "Rust", "Counter-Strike 2", "Garry's Mod",
+            "Phasmophobia", "Delivery & Beyond", "Cry of Fear", "Left 4 Dead 2",
+            "Counter-Strike: Source", "Counter-Strike 1.6", "Don't Starve",
+            "Don't Starve Together", "Five Nights at Freddy's 1", "Five Nights at Freddy's 2",
+            "Five Nights at Freddy's 3", "Five Nights at Freddy's 4", "Five Nights at Freddy's 5",
+            "Five Nights at Freddy's 6", "Five Nights at Freddy's 7", "The Forest", "Half-Life",
+            "Half-Life 2", "Half-Life: Blue Shift", "Half-Life: Opposing Force", "Geometry Dash",
+            "Helltaker", "Left 4 Dead", "Metro 2033", "People Playground",
+            "Poppy Playtime", "Portal", "Portal 2", "Terraria", "Undertale",
+            "Unturned", "Resident Evil 2", "War Thunder"
+        ];
+
+        let activeCategory = 'all';
+
+        function renderMedia() {
+            const grid = document.getElementById('mediaGrid');
+            const noResults = document.getElementById('noResults');
+            const searchVal = document.getElementById('mediaSearch').value.toLowerCase().trim();
+            grid.innerHTML = '';
+
+            let count = 0;
+            mediaList.forEach(item => {
+                const matchesCat = (activeCategory === 'all' || item.cat === activeCategory);
+                const title = currentLang === 'ru' ? item.ru : item.en;
+                const matchesSearch = title.toLowerCase().includes(searchVal) || item.ru.toLowerCase().includes(searchVal) || item.en.toLowerCase().includes(searchVal);
+
+                if (matchesCat && matchesSearch) {
+                    count++;
+                    const card = document.createElement('div');
+                    card.className = 'glass-card glass-card-hover p-3 rounded-2xl flex items-center justify-between space-x-2 border border-sky-300/10 min-w-0';
+                    
+                    let tagColor = 'bg-sky-500/20 text-sky-200 border-sky-400/30';
+                    if (item.cat === 'anime') tagColor = 'bg-blue-500/20 text-blue-200 border-blue-400/30';
+                    if (item.cat === 'horror') tagColor = 'bg-indigo-500/20 text-indigo-200 border-indigo-400/30';
+
+                    const itemTag = currentLang === 'ru' ? item.tag_ru : item.tag_en;
+
+                    card.innerHTML = `
+                        <div class="flex items-center space-x-3 min-w-0">
+                            <div class="w-8 h-8 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-300 text-xs flex-shrink-0">
+                                <i class="fa-solid ${item.icon}"></i>
+                            </div>
+                            <span class="text-xs font-semibold text-white truncate min-w-0">${title}</span>
+                        </div>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full border ${tagColor} font-medium flex-shrink-0">
+                            ${itemTag}
+                        </span>
+                    `;
+                    grid.appendChild(card);
+                }
+            });
+
+            if (count === 0) noResults.classList.remove('hidden');
+            else noResults.classList.add('hidden');
+
+            document.getElementById('mediaCount').textContent = count;
+        }
+
+        function renderMusic() {
+            const container = document.getElementById('musicContainer');
+            container.innerHTML = '';
+
+            musicList.forEach(item => {
+                const name = currentLang === 'ru' ? item.ru : item.en;
+                const tag = document.createElement('span');
+                tag.className = 'px-3.5 py-2 rounded-2xl bg-white/5 border border-sky-300/15 hover:border-sky-400/50 hover:bg-sky-500/15 text-sm font-medium text-slate-200 hover:text-sky-300 transition-all cursor-default shadow-sm hover:scale-105 break-words';
+                tag.textContent = `🎵 ${name}`;
+                container.appendChild(tag);
+            });
+        }
+
+        function renderGames() {
+            const container = document.getElementById('gamesContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            gamesList.forEach(game => {
+                const tag = document.createElement('span');
+                tag.className = 'px-3.5 py-2 rounded-2xl bg-white/5 border border-emerald-300/15 hover:border-emerald-400/50 hover:bg-emerald-500/15 text-sm font-medium text-slate-200 hover:text-emerald-300 transition-all cursor-default shadow-sm hover:scale-105 break-words';
+                tag.innerHTML = `<i class="fa-solid fa-gamepad mr-1.5 opacity-60"></i>${game}`;
+                container.appendChild(tag);
+            });
+        }
+
+        function filterMedia(cat) {
+            activeCategory = cat;
+            ['all', 'cinema', 'anime', 'horror'].forEach(c => {
+                const btn = document.getElementById(`tab-${c}`);
+                if (c === cat) {
+                    btn.className = "px-3 py-1.5 rounded-lg text-white font-medium bg-sky-500/20 border border-sky-400/30 transition-colors";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg text-slate-300 hover:text-white font-medium transition-colors";
+                }
+            });
+            renderMedia();
+        }
+
+        function searchMedia() { renderMedia(); }
+
+        /* Language Application Logic */
+        function applyLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('profile_lang', lang);
+
+            const dict = i18n[lang];
+            document.getElementById('langLabel').textContent = lang.toUpperCase();
+            document.getElementById('badge1').textContent = dict.badge1;
+            document.getElementById('badge2').textContent = dict.badge2;
+            document.getElementById('badge3').textContent = dict.badge3;
+
+            document.getElementById('displayBio').textContent = dict.bio;
+
+            document.getElementById('statWatched').innerHTML = `<i class="fa-solid fa-film mr-1.5 text-sky-400"></i> ${dict.statWatched}`;
+            document.getElementById('statMusic').innerHTML = `<i class="fa-solid fa-music mr-1.5 text-blue-400"></i> ${dict.statMusic}`;
+            document.getElementById('statWatching').innerHTML = `<i class="fa-solid fa-tv mr-1.5 text-emerald-400"></i> ${dict.statWatching}`;
+
+            document.getElementById('lblNowWatching').textContent = dict.lblNowWatching;
+            document.getElementById('txtBarryTitle').textContent = dict.barryTitle;
+            document.getElementById('txtBarryGenre').textContent = dict.barryGenre;
+            document.getElementById('lblBarryStatus').textContent = dict.lblBarryStatus;
+
+            document.getElementById('lblWatchedHeader').innerHTML = `<i class="fa-solid fa-film mr-2 text-sky-400"></i> ${dict.lblWatchedHeader}`;
+            document.getElementById('lblTotalCollection').textContent = dict.lblTotalCollection;
+
+            document.getElementById('tab-all').textContent = dict.tabAll;
+            document.getElementById('tab-cinema').textContent = dict.tabCinema;
+            document.getElementById('tab-anime').textContent = dict.tabAnime;
+            document.getElementById('tab-horror').textContent = dict.tabHorror;
+
+            document.getElementById('mediaSearch').placeholder = dict.searchPlaceholder;
+            document.getElementById('noResults').textContent = dict.noResults;
+
+            document.getElementById('lblMusicHeader').innerHTML = `<i class="fa-solid fa-headphones mr-2 text-sky-400"></i> ${dict.lblMusicHeader}`;
+            document.getElementById('lblMusicBadge').textContent = dict.lblMusicBadge;
+
+            document.getElementById('lblGamesHeader').innerHTML = `<i class="fa-solid fa-gamepad mr-2 text-emerald-400"></i> ${dict.lblGamesHeader}`;
+            document.getElementById('lblGamesBadge').textContent = dict.lblGamesBadge;
+
+            document.getElementById('lblAudioHeader').innerHTML = `<i class="fa-solid fa-compact-disc mr-2 text-sky-400 animate-spin" style="animation-duration: 8s;"></i> ${dict.lblAudioHeader}`;
+
+            document.getElementById('lblSocialHeader').innerHTML = `<i class="fa-solid fa-share-nodes mr-2 text-sky-400"></i> ${dict.lblSocialHeader}`;
+            
+            document.getElementById('lblQuoteHeader').innerHTML = `<i class="fa-solid fa-quote-left mr-2 text-sky-400 flex-shrink-0"></i> <span>${dict.lblQuoteHeader}</span>`;
+            document.getElementById('quoteText').textContent = dict.quoteText;
+            document.getElementById('quoteAuthor').textContent = dict.quoteAuthor;
+
+            document.getElementById('lblFooterText').textContent = dict.lblFooterText;
+
+            renderMedia();
+            renderMusic();
+            renderGames();
+        }
+
+        function toggleLanguage() {
+            const nextLang = currentLang === 'ru' ? 'en' : 'ru';
+            applyLanguage(nextLang);
+            showToast(i18n[nextLang].langToast);
+        }
+
+        let toastTimeout;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = message;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2800);
+        }
+
+        function copyToClipboard(text, message) {
+            const tempInput = document.createElement('input');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast(message || i18n[currentLang].copiedToast);
+        }
+
+        function copyUsername() {
+            const username = document.getElementById('displayUsername').textContent;
+            copyToClipboard(username, `Никнейм ${username} скопирован!`);
+        }
+
+        /* Real Audio Player Logic (Track: Forever - Alex G) */
+        const realAudio = document.getElementById('realAudio');
+        let currentTrackIndex = 0;
+
+        const playlist = [
+            { 
+                title: "Forever", 
+                artist: "Alex G", 
+                cover: "https://i1.sndcdn.com/artworks-odlI7sYNd94l-0-t500x500.jpg",
+                src: "https://file.garden/ar-UZFwv0Jz67dhz/Alex%20G%20-%20Forever.mp3"
+            }
+        ];
+
+        function formatTime(seconds) {
+            if (isNaN(seconds) || !seconds) return "0:00";
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function loadTrack(index) {
+            const track = playlist[index];
+            document.getElementById('trackTitle').textContent = track.title;
+            document.getElementById('trackArtist').textContent = track.artist;
+            document.getElementById('trackCover').src = track.cover;
+
+            if (track.src) {
+                realAudio.src = track.src;
+            }
+        }
+
+        function updatePlayerProgress() {
+            const current = realAudio.currentTime || 0;
+            const duration = realAudio.duration || 0;
+
+            document.getElementById('currentTime').textContent = formatTime(current);
+            document.getElementById('durationTime').textContent = formatTime(duration);
+
+            const pct = duration > 0 ? (current / duration) * 100 : 0;
+            document.getElementById('audioProgress').style.width = `${pct}%`;
+        }
+
+        realAudio.addEventListener('timeupdate', updatePlayerProgress);
+        realAudio.addEventListener('loadedmetadata', updatePlayerProgress);
+        realAudio.addEventListener('ended', () => {
+            setPlayState(false);
+            nextTrack();
+        });
+
+        function setPlayState(isPlaying) {
+            const mainIcon = document.getElementById('mainPlayIcon');
+            const overlayIcon = document.getElementById('overlayPlayIcon');
+
+            if (isPlaying) {
+                mainIcon.className = "fa-solid fa-pause text-sm ml-0";
+                overlayIcon.className = "fa-solid fa-pause ml-0";
+            } else {
+                mainIcon.className = "fa-solid fa-play text-sm ml-0.5";
+                overlayIcon.className = "fa-solid fa-play ml-0.5";
+            }
+        }
+
+        function toggleAudio() {
+            if (realAudio.paused) {
+                realAudio.play().then(() => {
+                    setPlayState(true);
+                    showToast("Воспроизведение...");
+                }).catch(err => {
+                    showToast("Ошибка воспроизведения файла");
+                    console.error(err);
+                });
+            } else {
+                realAudio.pause();
+                setPlayState(false);
+            }
+        }
+
+        function nextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
+            loadTrack(currentTrackIndex);
+            if (!realAudio.paused) {
+                realAudio.play().catch(() => {});
+            }
+            showToast(`Переключено: ${playlist[currentTrackIndex].title}`);
+        }
+
+        function prevTrack() {
+            currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+            loadTrack(currentTrackIndex);
+            if (!realAudio.paused) {
+                realAudio.play().catch(() => {});
+            }
+            showToast(`Переключено: ${playlist[currentTrackIndex].title}`);
+        }
+
+        function seekAudio(e) {
+            if (!realAudio.duration) return;
+            const rect = e.currentTarget.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const width = rect.width;
+            realAudio.currentTime = (clickX / width) * realAudio.duration;
+            updatePlayerProgress();
+        }
+
+        loadTrack(0);
+
+        window.onload = function() {
+            applyLanguage(currentLang);
+        };
+    </script>
+</body>
+</html>
