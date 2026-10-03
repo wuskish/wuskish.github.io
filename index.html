@@ -288,9 +288,9 @@
             </div>
         </section>
 
-        <!-- Audio Player Section (Track: Forever - Alex G) -->
+        <!-- Audio Player Section (Track: small - sundots) -->
         <section class="glass-card rounded-3xl p-6 relative overflow-hidden">
-            <audio id="realAudio" src="https://file.garden/ar-UZFwv0Jz67dhz/Alex%20G%20-%20Forever.mp3" preload="metadata"></audio>
+            <audio id="realAudio" src="https://file.garden/ar-UZFwv0Jz67dhz/Sundots%20-%20small.mp3" preload="metadata"></audio>
 
             <div class="mb-4">
                 <h2 id="lblAudioHeader" class="text-base font-bold text-white flex items-center">
@@ -301,7 +301,7 @@
 
             <div class="flex flex-col sm:flex-row items-center gap-6">
                 <div class="relative w-28 h-28 sm:w-32 sm:h-32 flex-shrink-0 rounded-2xl overflow-hidden group shadow-lg border border-white/15">
-                    <img id="trackCover" src="https://i1.sndcdn.com/artworks-odlI7sYNd94l-0-t500x500.jpg" alt="Album Cover" class="w-full h-full object-cover">
+                    <img id="trackCover" src="https://i1.sndcdn.com/artworks-000640622434-a8sjvs-t500x500.jpg" alt="Album Cover" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <button onclick="toggleAudio()" class="w-12 h-12 rounded-full bg-white text-slate-900 flex items-center justify-center text-lg shadow-xl hover:scale-110 transition-transform">
                             <i id="overlayPlayIcon" class="fa-solid fa-play ml-0.5"></i>
@@ -311,8 +311,8 @@
 
                 <div class="flex-1 w-full space-y-3 min-w-0">
                     <div class="min-w-0">
-                        <h3 id="trackTitle" class="text-lg font-bold text-white truncate">Forever</h3>
-                        <p id="trackArtist" class="text-sm text-sky-200/70 truncate">Alex G</p>
+                        <h3 id="trackTitle" class="text-lg font-bold text-white truncate">small</h3>
+                        <p id="trackArtist" class="text-sm text-sky-200/70 truncate">sundots</p>
                     </div>
 
                     <div class="h-8 bg-black/40 rounded-xl p-2 flex items-end justify-between gap-1 overflow-hidden border border-sky-300/10">
@@ -587,7 +587,7 @@
 
         /* Full Bilingual List of 17 Music Artists */
         const musicList = [
-            { ru: "Alex G", en: "Alex G" },
+            { ru: "sundots", en: "sundots" },
             { ru: "Sematary", en: "Sematary" },
             { ru: "Nirvana", en: "Nirvana" },
             { ru: "Weezer", en: "Weezer" },
@@ -800,16 +800,16 @@
             copyToClipboard(username, `Никнейм ${username} скопирован!`);
         }
 
-        /* Real Audio Player Logic (Track: Forever - Alex G) */
+        /* Real Audio Player Logic (Track: small - sundots) */
         const realAudio = document.getElementById('realAudio');
         let currentTrackIndex = 0;
 
         const playlist = [
             { 
-                title: "Forever", 
-                artist: "Alex G", 
+                title: "small", 
+                artist: "sundots", 
                 cover: "https://i1.sndcdn.com/artworks-odlI7sYNd94l-0-t500x500.jpg",
-                src: "https://file.garden/ar-UZFwv0Jz67dhz/Alex%20G%20-%20Forever.mp3"
+                src: "https://file.garden/ar-UZFwv0Jz67dhz/Sundots%20-%20small.mp3"
             }
         ];
 
