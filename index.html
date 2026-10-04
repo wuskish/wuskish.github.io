@@ -200,7 +200,7 @@
 
                     <!-- Quick Location / Stat Bar -->
                     <div class="pt-3 flex flex-wrap justify-center md:justify-start items-center gap-4 text-xs text-sky-200/70 border-t border-sky-200/10">
-                        <span id="statWatched" class="flex items-center"><i class="fa-solid fa-film mr-1.5 text-sky-400"></i> 47+ Посмотрено</span>
+                        <span id="statWatched" class="flex items-center"><i class="fa-solid fa-film mr-1.5 text-sky-400"></i> 50+ Посмотрено</span>
                         <span id="statMusic" class="flex items-center"><i class="fa-solid fa-music mr-1.5 text-blue-400"></i> 17 Любимых Исполнителей</span>
                         <span id="statWatching" class="flex items-center"><i class="fa-solid fa-tv mr-1.5 text-emerald-400"></i> Смотрю: Реквием по мечте (2000)</span>
                     </div>
@@ -225,18 +225,18 @@
             </span>
         </section>
 
-        <!-- Media Watched Section (47 Items) -->
+        <!-- Media Watched Section (50 Items) -->
         <section class="glass-card rounded-3xl p-6 space-y-5">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h2 id="lblWatchedHeader" class="text-lg font-bold text-white flex items-center">
                         <i class="fa-solid fa-film mr-2 text-sky-400"></i> Посмотрел (Фильмы / Сериалы / Аниме)
                     </h2>
-                    <p class="text-xs text-sky-200/70 mt-0.5"><span id="lblTotalCollection">Всего в коллекции:</span> <span id="mediaCount" class="text-sky-300 font-bold">47</span></p>
+                    <p class="text-xs text-sky-200/70 mt-0.5"><span id="lblTotalCollection">Всего в коллекции:</span> <span id="mediaCount" class="text-sky-300 font-bold">50</span></p>
                 </div>
 
                 <div class="flex flex-wrap bg-white/5 p-1 rounded-xl border border-sky-200/15 text-xs">
-                    <button onclick="filterMedia('all')" id="tab-all" class="px-3 py-1.5 rounded-lg text-white font-medium bg-sky-500/20 border border-sky-400/30 transition-colors">Все (47)</button>
+                    <button onclick="filterMedia('all')" id="tab-all" class="px-3 py-1.5 rounded-lg text-white font-medium bg-sky-500/20 border border-sky-400/30 transition-colors">Все (50)</button>
                     <button onclick="filterMedia('cinema')" id="tab-cinema" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white font-medium transition-colors">Кино & Сериалы</button>
                     <button onclick="filterMedia('anime')" id="tab-anime" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white font-medium transition-colors">Аниме & Мульт</button>
                     <button onclick="filterMedia('horror')" id="tab-horror" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white font-medium transition-colors">Web & Horror</button>
@@ -424,7 +424,7 @@
                 badge2: "🎵 Меломан",
                 badge3: "👻 Любитель Аналоговых Хорроров",
                 bio: "Всеееем привет... Люблю посмотреть фильмы/сериалы и поиграть в игры. Слушаю музыку 24/7.",
-                statWatched: "47+ Посмотрено",
+                statWatched: "50+ Посмотрено",
                 statMusic: "17 Любимых Исполнителей",
                 statWatching: "Смотрю: Реквием по мечте (2000)",
                 lblNowWatching: "👀 Сейчас смотрю",
@@ -433,7 +433,7 @@
                 lblBarryStatus: "В процессе просмотра",
                 lblWatchedHeader: "Посмотрел (Фильмы / Сериалы / Аниме)",
                 lblTotalCollection: "Всего в коллекции:",
-                tabAll: "Все (47)",
+                tabAll: "Все (50)",
                 tabCinema: "Кино & Сериалы",
                 tabAnime: "Аниме & Мульт",
                 tabHorror: "Web & Horror",
@@ -457,7 +457,7 @@
                 badge2: "🎵 Music Lover",
                 badge3: "👻 Analog Horror Fan",
                 bio: "Hey guys! Huge fan of movies, shows, and gaming. Literally listening to music 24/7.",
-                statWatched: "47+ Watched",
+                statWatched: "50+ Watched",
                 statMusic: "17 Favorite Artists",
                 statWatching: "Watching: Requiem for a Dream (2000)",
                 lblNowWatching: "👀 Currently Watching",
@@ -466,7 +466,7 @@
                 lblBarryStatus: "In Progress",
                 lblWatchedHeader: "Watched (Movies / TV Shows / Anime)",
                 lblTotalCollection: "Total items:",
-                tabAll: "All (47)",
+                tabAll: "All (50)",
                 tabCinema: "Movies & TV",
                 tabAnime: "Anime & Toons",
                 tabHorror: "Web & Horror",
@@ -534,7 +534,7 @@
         }
         animateParticles();
 
-        /* Full Bilingual List of 47 Watched Media Items */
+        /* Full Bilingual List of 50 Watched Media Items */
         const mediaList = [
             { ru: "Ублюдок (2014)", en: "Creep (2014)", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-ghost" },
             { ru: "В поисках Аляски", en: "Looking for Alaska", cat: "cinema", tag_ru: "Сериал", tag_en: "TV Series", icon: "fa-film" },
@@ -583,6 +583,9 @@
             { ru: "Эрго Прокси", en: "Ergo Proxy", cat: "anime", tag_ru: "Аниме", tag_en: "Anime", icon: "fa-moon" },
             { ru: "Уэйн", en: "Wayne", cat: "cinema", tag_ru: "Сериал", tag_en: "TV Series", icon: "fa-motorcycle" },
             { ru: "Пункт Назначения", en: "Final Destination", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-skull-crossbones" }
+            { ru: "Реквием по мечте (2000)", en: "Requiem for a Dream (2000)", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "Что-то не так с Кевином", en: "We Need to Talk About Kevin", cat: "cinema", tag_ru: "Фильм", tag_en: "Movie", icon: "fa-video" },
+            { ru: "Барри", en: "Barry", cat: "cinema", tag_ru: "Сериал", tag_en: "TV Series", icon: "fa-tv" },
         ];
 
         /* Full Bilingual List of 17 Music Artists */
